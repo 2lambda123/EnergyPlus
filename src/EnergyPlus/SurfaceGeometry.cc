@@ -9302,7 +9302,6 @@ namespace SurfaceGeometry {
 
     struct PopCoincidentVertexReturn
     {
-        // bool popNeeded;
         double perimeter;
         int poppedVertexPos = -1; // This is a STL vector position, 0-indexed
         int keptVertexPos = -1;
@@ -9555,12 +9554,16 @@ namespace SurfaceGeometry {
                                             RoutineName,
                                             state.dataSurfaceGeometry->SurfaceTmp(SurfNum).Name,
                                             state.dataSurfaceGeometry->SurfaceTmp(SurfNum).ZoneName));
-                    if (poppedVertexIndex > keptVertexIndex && poppedVertexIndex != nSides) {
-                        ShowContinueError(state, format("Vertex [{}]=({:.2R},{:.2R},{:.2R})", keptVertexIndex, itKept->x, itKept->y, itKept->z));
+
+                    bool const printPoppedFirst = (poppedVertexIndex < keptVertexIndex) ? !(poppedVertexIndex == 1 && keptVertexIndex == nSides)
+                                                                                        : (poppedVertexIndex == nSides && keptVertexIndex == 1);
+
+                    if (printPoppedFirst) {
                         ShowContinueError(state, format("Vertex [{}]=({:.2R},{:.2R},{:.2R})", poppedVertexIndex, it->x, it->y, it->z));
+                        ShowContinueError(state, format("Vertex [{}]=({:.2R},{:.2R},{:.2R})", keptVertexIndex, itKept->x, itKept->y, itKept->z));
                     } else {
-                        ShowContinueError(state, format("Vertex [{}]=({:.2R},{:.2R},{:.2R})", poppedVertexIndex, it->x, it->y, it->z));
                         ShowContinueError(state, format("Vertex [{}]=({:.2R},{:.2R},{:.2R})", keptVertexIndex, itKept->x, itKept->y, itKept->z));
+                        ShowContinueError(state, format("Vertex [{}]=({:.2R},{:.2R},{:.2R})", poppedVertexIndex, it->x, it->y, it->z));
                     }
                 }
                 ++state.dataErrTracking->TotalCoincidentVertices;
